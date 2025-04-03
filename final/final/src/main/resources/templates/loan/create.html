@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>New Loan</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>New Loan</h2>
+        <form action="/loans" method="post">
+            <div class="mb-3">
+                <label>Borrower Name:</label>
+                <input type="text" name="borrowerName" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Amount:</label>
+                <input type="number" name="amount" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Status:</label>
+                <select name="status" class="form-control">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Due Date:</label>
+                <input type="date" name="dueDate" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Save</button>
+            <a href="/loans" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
