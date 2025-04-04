@@ -2,12 +2,17 @@
 <html lang="en">
 <head>
     <title>Loan List</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
         <h2>Loan List</h2>
+        
+        <!-- Buttons for creating a new loan and borrowing money -->
         <a href="/loans/new" class="btn btn-primary">New Loan</a>
+        <a href="/borrow/borrow" class="btn btn-success">Borrow Money</a>
+        
+        <!-- Table displaying all loans -->
         <table class="table table-bordered mt-3">
             <thead>
                 <tr>
@@ -20,17 +25,22 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="loan : ${loans}">
-                    <td th:text="${loan.id}"></td>
-                    <td th:text="${loan.borrowerName}"></td>
-                    <td th:text="${loan.amount}"></td>
-                    <td th:text="${loan.status}"></td>
-                    <td th:text="${loan.dueDate}"></td>
-                    <td>
-                        <a th:href="@{/loans/delete/{id}(id=${loan.id})}" class="btn btn-danger">Delete</a>
-                    </td>
-                </tr>
-            </tbody>
+    	<tr th:each="loan : ${loans}">
+        	<td th:text="${loan.id}"></td>
+        	<td th:text="${loan.borrower.name}"></td>
+        	<td th:text="${loan.amount}"></td>
+        	<td th:text="${loan.status}"></td>
+        	<td th:text="${loan.dueDate}"></td>
+		<td>
+			<a th:href="@{/loans/updateStatus/{id}(id=${loan.id})?status=Approved}" class="btn btn-success">Approve</a>
+			<a th:href="@{/loans/updateStatus/{id}(id=${loan.id})?status=Rejected}" class="btn btn-danger">Reject</a>
+
+    		<a th:href="@{/loans/delete/{id}(id=${loan.id})}" class="btn btn-danger">Delete</a>
+		</td>
+
+    	</tr>
+	</tbody>
+
         </table>
     </div>
 </body>
