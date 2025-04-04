@@ -58,6 +58,38 @@ public class LoanController {
         loanService.deleteLoan(id);
         return "redirect:/loans";
     }
+    
+    
+    
+ // Show form to edit loan by ID
+    @GetMapping("/update/{id}")
+    public String showUpdateForm(@PathVariable Long id, Model model) {
+        Loan loan = loanService.getLoanById(id);
+        if (loan != null) {
+            model.addAttribute("loan", loan);
+            model.addAttribute("borrowers", borrowerService.getAllBorrowers());  // Add borrowers to the form
+            return "loan/update";  // Return the update form
+        }
+        return "redirect:/loans";  // If loan is not found, redirect to loans page
+    }
+
+    // Handle the update loan request
+    @PostMapping("/update/{id}")
+    public String updateLoan(@PathVariable Long id, @RequestParam Long borrowerId, @ModelAttribute Loan loan) {
+        Borrower borrower = borrowerService.getBorrowerById(borrowerId);
+        if (borrower != null) {
+            loan.setId(id);  // Ensure we update the correct loan
+            loan.setBorrower(borrower);  // Set the borrower
+            loanService.saveLoan(loan);  // Save the updated loan
+        } else {
+            return "redirect:/loans?error=BorrowerNotFound";
+        }
+        return "redirect:/loans";  // Redirect to the loan list after update
+    }
+
+    
+    
+    
 }
 
 
