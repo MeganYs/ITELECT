@@ -3,57 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Loan</title>
+    <title>Update Loan</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Edit Loan</h2>
+        <h2>Update Loan</h2>
+        
+        <!-- Form to update loan -->
+<form th:action="@{/loans/update/{id}(id=${loan.id})}" method="post">
+    <input type="hidden" name="id" th:value="${loan.id}">
+    
+    <div class="mb-3">
+        <label for="borrower">Borrower:</label>
+        <select name="borrowerId" class="form-control" required>
+            <option value="" disabled>Select Borrower</option>
+            <option th:each="borrower : ${borrowers}"
+                    th:value="${borrower.id}"
+                    th:text="${borrower.name}"
+                    th:selected="${borrower.id == loan.borrower.id}"></option>
+        </select>
+    </div>
 
-        <!-- Check if loan exists -->
-        <div th:if="${loan == null}">
-            <div class="alert alert-danger">Loan not found.</div>
-            <a href="/loans" class="btn btn-primary">Back to List</a>
-        </div>
+    <div class="mb-3">
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" class="form-control" th:value="${loan.amount}" required>
+    </div>
 
-        <div th:if="${loan != null}">
-				<form th:action="@{/loans/{id}(id=${loan.id})}" method="post">
-            
-                <input type="hidden" name="id" th:value="${loan.id}">
+    <div class="mb-3">
+        <label for="status">Status:</label>
+        <select name="status" class="form-control" required>
+            <option value="Pending" th:selected="${loan.status == 'Pending'}">Pending</option>
+            <option value="Approved" th:selected="${loan.status == 'Approved'}">Approved</option>
+            <option value="Rejected" th:selected="${loan.status == 'Rejected'}">Rejected</option>
+        </select>
+    </div>
 
-                <div class="mb-3">
-                    <label>Borrower:</label>
-                    <select name="borrowerId" class="form-control" required>
-                        <option th:each="borrower : ${borrowers}" 
-                                th:value="${borrower.id}" 
-                                th:text="${borrower.name}" 
-                                th:selected="${borrower.id == loan.borrower.id}"></option>
-                    </select>
-                </div>
+    <div class="mb-3">
+        <label for="dueDate">Due Date:</label>
+        <input type="date" name="dueDate" class="form-control" th:value="${loan.dueDate}" required>
+    </div>
 
-                <div class="mb-3">
-                    <label>Amount:</label>
-                    <input type="number" name="amount" class="form-control" th:value="${loan.amount}" required>
-                </div>
+    <button type="submit" class="btn btn-success">Update</button>
+    <a href="/loans" class="btn btn-secondary">Cancel</a>
+</form>
 
-                <div class="mb-3">
-                    <label>Status:</label>
-                    <select name="status" class="form-control" required>
-                        <option value="Pending" th:selected="${loan.status == 'Pending'}">Pending</option>
-                        <option value="Approved" th:selected="${loan.status == 'Approved'}">Approved</option>
-                        <option value="Rejected" th:selected="${loan.status == 'Rejected'}">Rejected</option>
-                    </select>
-                </div>
 
-                <div class="mb-3">
-                    <label>Due Date:</label>
-                    <input type="date" name="dueDate" class="form-control" th:value="${loan.dueDate}" required>
-                </div>
 
-                <button type="submit" class="btn btn-success">Update</button>
-                <a href="/loans" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
     </div>
 </body>
 </html>
