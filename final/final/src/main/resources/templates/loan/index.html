@@ -25,19 +25,21 @@
                 </tr>
             </thead>
             <tbody>
-    <tr th:each="loan : ${loans}">
-        <td th:text="${loan.id}"></td>
-        <td th:text="${loan.borrower.name}"></td>
-        <td th:text="${loan.amount}"></td>
-        <td th:text="${loan.status}"></td>
-        <td th:text="${loan.dueDate}"></td>
-        <td>
-            <a th:href="@{/loans/updateStatus/{id}(id=${loan.id})}?status=Approved" class="btn btn-success">Approve</a>
-            <a th:href="@{/loans/updateStatus/{id}(id=${loan.id})}?status=Rejected" class="btn btn-danger">Reject</a>
-            <a th:href="@{/loans/delete/{id}(id=${loan.id})}" class="btn btn-danger">Delete</a>
-        </td>
-    </tr>
-</tbody>
+    	<tr th:each="loan : ${loans}">
+        	<td th:text="${loan.id}"></td>
+        	<td th:text="${loan.borrower.name}"></td>
+        	<td th:text="${loan.amount}"></td>
+        	<td th:text="${loan.status}"></td>
+        	<td th:text="${loan.dueDate}"></td>
+		<td>
+			<a th:href="@{/loans/updateStatus/{id}(id=${loan.id})?status=Approved}" class="btn btn-success">Approve</a>
+			<a th:href="@{/loans/updateStatus/{id}(id=${loan.id})?status=Rejected}" class="btn btn-danger">Reject</a>
+
+    		<a th:href="@{/loans/delete/{id}(id=${loan.id})}" class="btn btn-danger">Delete</a>
+		</td>
+
+    	</tr>
+	</tbody>
 
         </table>
     </div>

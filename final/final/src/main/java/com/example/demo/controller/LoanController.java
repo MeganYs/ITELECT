@@ -25,6 +25,7 @@ public class LoanController {
         return "loan/index";  // Render the loan list
     }
 
+
     // Display the form to create a new loan
     @GetMapping("/new")
     public String showCreateForm(Model model) {
@@ -47,14 +48,15 @@ public class LoanController {
     }
 
     // Update the loan status (e.g., approve or reject)
+ // Update the loan status (e.g., approve or reject)
     @GetMapping("/updateStatus/{id}")
     public String updateLoanStatus(@PathVariable Long id, @RequestParam String status) {
-        Loan loan = service.getLoanById(id);
+        Loan loan = service.getLoanById(id);  // Use the correct service bean
         if (loan != null) {
-            loan.setStatus(status);  // Update the loan status
-            service.saveLoan(loan);  // Save the updated loan
+            loan.setStatus(status); // Update the loan status
+            service.saveLoan(loan); // Save the updated loan
         }
-        return "redirect:/loans";  // Redirect to the loan list after updating status
+        return "redirect:/loans"; // Redirect to the loan list after updating status
     }
 }
 
