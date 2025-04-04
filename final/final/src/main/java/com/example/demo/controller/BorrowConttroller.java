@@ -46,8 +46,9 @@ public class BorrowConttroller {
 
         loanService.saveLoan(loan);  // Save the loan in the database
 
-        return "forward:/loans";  // Redirect to the loan list page after saving
+        return "redirect:/loans";  // Redirect to the loan list page after saving the borrower and loan
     }
+
 
 
 }

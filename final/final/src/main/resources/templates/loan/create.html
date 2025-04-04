@@ -7,33 +7,35 @@
 <body>
     <div class="container mt-5">
         <h2>New Loan</h2>
-        <form action="/loans" method="post">
-            <div class="mb-3">
-                <label>Borrower:</label>
-                <select name="borrowerId" class="form-control" required>
-                    <option th:each="borrower : ${borrowers}" 
-                            th:value="${borrower.id}" 
-                            th:text="${borrower.name}"></option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label>Amount:</label>
-                <input type="number" name="amount" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Status:</label>
-                <select name="status" class="form-control">
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label>Due Date:</label>
-                <input type="date" name="dueDate" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-success">Save</button>
-            <a href="/loans" class="btn btn-secondary">Cancel</a>
-        </form>
+		        <form action="/loans" method="post">
+		    <div class="mb-3">
+		        <label>Borrower:</label>
+		        <select name="borrowerId" class="form-control" required>
+		            <option th:each="borrower : ${borrowers}" 
+		                    th:value="${borrower.id}" 
+		                    th:text="${borrower.name}">
+		            </option>
+		        </select>
+		    </div>
+		    <div class="mb-3">
+		        <label>Amount:</label>
+		        <input type="number" name="amount" class="form-control" required>
+		    </div>
+		    <div class="mb-3">
+		        <label>Status:</label>
+		        <select name="status" class="form-control">
+		            <option value="Pending">Pending</option>
+		            <option value="Approved">Approved</option>
+		        </select>
+		    </div>
+		    <div class="mb-3">
+		        <label>Due Date:</label>
+		        <input type="date" name="dueDate" class="form-control" required>
+		    </div>
+		    <button type="submit" class="btn btn-success">Save</button>
+		    <a href="/loans" class="btn btn-secondary">Cancel</a>
+		</form>
+
     </div>
 </body>
 </html>

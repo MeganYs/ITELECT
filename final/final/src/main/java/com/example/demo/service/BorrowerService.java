@@ -20,5 +20,9 @@ public class BorrowerService {
     public Borrower saveBorrower(Borrower borrower) {
         return repository.save(borrower);
     }
+    
+    public Borrower getBorrowerById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
 }
 
