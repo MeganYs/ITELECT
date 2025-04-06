@@ -12,4 +12,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     List<Loan> findByAmount(double amount);
     List<Loan> findByStatus(String status);
     List<Loan> findByDueDate(Date dueDate);
+    List<Loan> findByBorrowerId(Long borrowerId);
+    
+
 }

@@ -6,8 +6,9 @@ import java.util.List;
 @Table(name = "borrowers")
 public class Borrower {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_gen")
+	@SequenceGenerator(name = "seq_gen", sequenceName = "SEQ_NAME", allocationSize = 1)
     private Long id;
 
     private String name;

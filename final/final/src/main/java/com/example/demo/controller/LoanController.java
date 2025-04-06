@@ -10,7 +10,8 @@ import com.example.demo.entity.Loan;
 import com.example.demo.service.BorrowerService;
 import com.example.demo.service.LoanService;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Controller
 @RequestMapping("/loans")
@@ -26,8 +27,34 @@ public class LoanController {
     @GetMapping
     public String listLoans(Model model) {
         List<Loan> loans = loanService.getAllLoans();
+
+        // Create a map of loanId -> monthly installment
+        Map<Long, BigDecimal> monthlyInstallments = new HashMap<>();
+
+        for (Loan loan : loans) {
+            BigDecimal installment = calculateMonthlyInstallment(loan.getAmount(), loan.getMonth());
+            monthlyInstallments.put(loan.getId(), installment);
+        }
+
         model.addAttribute("loans", loans);
+        model.addAttribute("installments", monthlyInstallments);
+
         return "loan/index";
+    }
+
+    // Monthly installment calculation logic
+    private BigDecimal calculateMonthlyInstallment(BigDecimal amount, Integer months) {
+        if (amount == null || months == null || months == 0) return BigDecimal.ZERO;
+
+        BigDecimal interestRate = switch (months) {
+            case 3 -> BigDecimal.valueOf(0.10);
+            case 6 -> BigDecimal.valueOf(0.20);
+            case 12 -> BigDecimal.valueOf(0.30);
+            default -> BigDecimal.ZERO;
+        };
+
+        BigDecimal totalWithInterest = amount.multiply(BigDecimal.ONE.add(interestRate));
+        return totalWithInterest.divide(BigDecimal.valueOf(months), 2, BigDecimal.ROUND_HALF_UP);
     }
 
     // Display form to create new loan
@@ -45,12 +72,10 @@ public class LoanController {
             loan.setBorrower(borrower);  // Link borrower to the loan
             loanService.saveLoan(loan);
         } else {
-            // Handle case when borrower is not found
             return "redirect:/loans?error=BorrowerNotFound";
         }
         return "redirect:/loans";
     }
-
 
     // Delete loan
     @GetMapping("/delete/{id}")
@@ -58,39 +83,44 @@ public class LoanController {
         loanService.deleteLoan(id);
         return "redirect:/loans";
     }
-    
-    
-    
- // Show form to edit loan by ID
+
+    // Show form to edit loan by ID
     @GetMapping("/update/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model) {
         Loan loan = loanService.getLoanById(id);
         if (loan != null) {
             model.addAttribute("loan", loan);
-            model.addAttribute("borrowers", borrowerService.getAllBorrowers());  // Add borrowers to the form
-            return "loan/update";  // Return the update form
+            model.addAttribute("borrowers", borrowerService.getAllBorrowers());
+            return "loan/update";
         }
-        return "redirect:/loans";  // If loan is not found, redirect to loans page
+        return "redirect:/loans";
     }
 
-    // Handle the update loan request
     @PostMapping("/update/{id}")
     public String updateLoan(@PathVariable Long id, @RequestParam Long borrowerId, @ModelAttribute Loan loan) {
+        Loan existingLoan = loanService.getLoanById(id);
         Borrower borrower = borrowerService.getBorrowerById(borrowerId);
-        if (borrower != null) {
-            loan.setId(id);  // Ensure we update the correct loan
-            loan.setBorrower(borrower);  // Set the borrower
-            loanService.saveLoan(loan);  // Save the updated loan
-        } else {
-            return "redirect:/loans?error=BorrowerNotFound";
+
+        if (existingLoan == null || borrower == null) {
+            return "redirect:/loans?error=NotFound";
         }
-        return "redirect:/loans";  // Redirect to the loan list after update
+
+        BigDecimal interestRate = switch (loan.getMonth()) {
+            case 3 -> BigDecimal.valueOf(0.10);
+            case 6 -> BigDecimal.valueOf(0.20);
+            case 12 -> BigDecimal.valueOf(0.30);
+            default -> BigDecimal.ZERO;
+        };
+
+        BigDecimal newAmount = existingLoan.getAmount().multiply(BigDecimal.ONE.add(interestRate));
+
+        existingLoan.setMonth(loan.getMonth());
+        existingLoan.setAmount(newAmount);
+        existingLoan.setBorrower(borrower);
+
+        loanService.saveLoan(existingLoan);
+
+        System.out.println("✅ Loan update complete");
+        return "redirect:/loans";
     }
-
-    
-    
-    
 }
-
-
-

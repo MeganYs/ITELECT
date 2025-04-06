@@ -43,13 +43,20 @@
         <label for="dueDate">Due Date:</label>
         <input type="date" name="dueDate" class="form-control" th:value="${loan.dueDate}" required>
     </div>
-
+	
+	<div class="mb-3">
+	    <label for="month">Terms (Months):</label>
+	    <select name="month" class="form-control" required>
+	        <option value="" disabled>Select Terms</option>
+	        <option value="1" th:selected="${loan.month == 1}">1 Month - No Interest</option>
+	        <option value="3" th:selected="${loan.month == 3}">3 Months - 10% Interest</option>
+	        <option value="6" th:selected="${loan.month == 6}">6 Months - 20% Interest</option>
+	        <option value="12" th:selected="${loan.month == 12}">12 Months - 30% Interest</option>
+	    </select>
+	</div>
     <button type="submit" class="btn btn-success">Update</button>
     <a href="/loans" class="btn btn-secondary">Cancel</a>
 </form>
-
-
-
     </div>
 </body>
 </html>

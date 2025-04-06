@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class BorrowConttroller {
         // Create a new loan for the saved borrower
         Loan loan = new Loan();
         loan.setBorrower(savedBorrower);  // Set the borrower for the loan
-        loan.setAmount(borrower.getAmount());  // Set the loan amount (from the borrower)
+        loan.setAmount(BigDecimal.valueOf(borrower.getAmount()));  // Set the loan amount (from the borrower)
         loan.setStatus("Pending");  // Default status for the loan
         loan.setDueDate(new Date());  // Set the current date as due date (you can modify this as per your logic)
 
