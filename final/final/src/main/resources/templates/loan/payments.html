@@ -1,152 +1,121 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Payments</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script>
-        function updateLoans() {
-            const borrowerId = document.getElementById("borrower").value;
-            const loanSelect = document.getElementById("loan");
-            const amountSelect = document.getElementById("amount");
+        // When borrower is selected, load their loans
+        function fetchLoans() {
+            const borrowerId = document.getElementById("borrowerId").value;
+            const loanSelect = document.getElementById("loanId");
+            const amountInput = document.getElementById("amount");
 
-            // Reset dropdowns
-            loanSelect.innerHTML = "<option value=''>Select Loan</option>";
-            loanSelect.disabled = true;
-            amountSelect.innerHTML = "<option value=''>Select Amount</option>";
-            amountSelect.disabled = true;
+            loanSelect.innerHTML = '<option value="">Loading...</option>';
+            amountInput.value = "";
 
-            if (!borrowerId) {
-                document.getElementById("payments-table-body").innerHTML = "";
-                return;
+            if (borrowerId) {
+                fetch(`/payments/loans?borrowerId=${borrowerId}`)
+                    .then(res => res.json())
+                    .then(loans => {
+                        loanSelect.innerHTML = '<option value="">-- Select Loan --</option>';
+                        loans.forEach(loan => {
+                            const option = document.createElement("option");
+                            option.value = loan.id;
+                            option.text = `Loan #${loan.id} - ₱${loan.amount}`;
+                            loanSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                loanSelect.innerHTML = '<option value="">-- Select Loan --</option>';
             }
-
-            // Fetch Loans
-            fetch("/payments/loans?borrowerId=" + borrowerId)
-                .then(response => response.json())
-                .then(loans => {
-                    loans.forEach(loan => {
-                        const option = document.createElement("option");
-                        option.value = loan.id;
-                        option.text = "Loan ID: " + loan.id;
-                        loanSelect.appendChild(option);
-                    });
-                    loanSelect.disabled = false;
-                })
-                .catch(error => console.error("Error fetching loans:", error));
-
-            // Fetch Payments for the Borrower
-            fetch("/payments/by-borrower?borrowerId=" + borrowerId)
-                .then(response => response.json())
-                .then(payments => {
-                    const tbody = document.getElementById("payments-table-body");
-                    tbody.innerHTML = "";
-
-                    if (payments.length === 0) {
-                        tbody.innerHTML = "<tr><td colspan='5' class='text-center'>No payments found.</td></tr>";
-                        return;
-                    }
-
-                    payments.forEach(payment => {
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${payment.id}</td>
-                            <td>${payment.borrower.name}</td>
-                            <td>${payment.amount}</td>
-                            <td>${payment.paymentDate}</td>
-                            <td>${payment.loan ? payment.loan.status : 'N/A'}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error("Error fetching payments:", error));
         }
 
+        // When loan is selected, fetch installment
         function fetchInstallment() {
-            const loanId = document.getElementById("loan").value;
-            const amountSelect = document.getElementById("amount");
-
-            amountSelect.innerHTML = "<option value=''>Select Amount</option>";
-            amountSelect.disabled = false;
-
-            if (!loanId) return;
-
-			fetch("/payments/by-borrower?borrowerId=" + borrowerId)
-                .then(response => response.json())
-                .then(data => {
-                    const installment = data.installment;
-                    const option = document.createElement("option");
-                    option.value = installment;
-                    option.text = installment.toFixed(2);
-                    amountSelect.appendChild(option);
-                    amountSelect.disabled = false;
-                })
-                .catch(error => console.error("Error fetching installment:", error));
+            const loanId = document.getElementById("loanId").value;
+            if (loanId) {
+                fetch(`/payments/installment?loanId=${loanId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("amount").value = data.installment;
+                    });
+            }
         }
     </script>
 </head>
 <body>
+<div class="container mt-5">
 
-<a href="/loans" class="btn btn-primary m-3">Back to Loan</a>
+    <h2 class="mb-4">Make a Payment</h2>
 
-<div class="container mt-4">
-    <h1 class="mb-4">Payments</h1>
-
-    <!-- Add Payment Form -->
-    <form method="post" th:action="@{/payments/save}">
-        <div class="mb-3">
-            <label for="borrower" class="form-label">Borrower</label>
-            <select id="borrower" name="borrowerId" class="form-select" onchange="updateLoans()" required>
-                <option value="">Select Borrower</option>
+    <form action="/payments/save" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label for="borrowerId" class="form-label">Borrower:</label>
+            <select name="borrowerId" id="borrowerId" class="form-select" onchange="fetchLoans()" required>
+                <option value="">-- Select Borrower --</option>
                 <option th:each="b : ${borrowers}" th:value="${b.id}" th:text="${b.name}"></option>
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="loan" class="form-label">Loan</label>
-            <select id="loan" name="loanId" class="form-select" onchange="fetchInstallment()" disabled required>
-                <option value="">Select Loan</option>
+        <div class="col-md-6">
+            <label for="loanId" class="form-label">Loan:</label>
+            <select id="loanId" name="loanId" class="form-select" onchange="fetchInstallment()" required>
+                <option value="">-- Select Loan --</option>
+                <!-- Options are dynamically loaded via JS -->
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="amount" class="form-label">Amount</label>
-            <select id="amount" name="amount" class="form-select" disabled required>
-                <option value="">Select Amount</option>
-            </select>
+        <div class="col-md-6">
+            <label for="amount" class="form-label">Amount (Installment):</label>
+            <input type="text" id="amount" name="amount" class="form-control" readonly />
         </div>
 
-        <button type="submit" class="btn btn-success">Submit Payment</button>
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary mt-3">Submit Payment</button>
+        </div>
     </form>
 
-    <hr>
+    <hr class="my-5">
 
-    <!-- Payments Table -->
-    <h2 class="mt-4">Payment Records</h2>
-    <table class="table table-bordered mt-3">
-        <thead class="table-dark">
+    <h2 class="mb-4">View Payment Records by Borrower</h2>
+
+    <form method="get" action="/payments" class="row g-3">
+        <div class="col-md-6">
+            <select name="borrowerId" class="form-select">
+                <option value="">-- Select Borrower --</option>
+                <option th:each="b : ${borrowers}" th:value="${b.id}" th:text="${b.name}"
+                        th:selected="${selectedBorrowerId == b.id}"></option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <button type="submit" class="btn btn-info">View Payments</button>
+        </div>
+    </form>
+
+    <div class="mt-4" th:if="${payments.isEmpty()}">
+        <div class="alert alert-warning">No payment records found.</div>
+    </div>
+
+    <div class="mt-4" th:if="${!payments.isEmpty()}">
+        <table class="table table-bordered">
+            <thead class="table-light">
             <tr>
-                <th>ID</th>
-                <th>Borrower</th>
-                <th>Amount</th>
-                <th>Payment Date</th>
+                <th>Loan ID</th>
+                <th>Amount Paid</th>
+                <th>Date Paid</th>
                 <th>Status</th>
             </tr>
-        </thead>
-		<tbody>
-		    <tr th:if="${#lists.isEmpty(payments)}">
-		        <td colspan="5" class="text-center">No payments found.</td>
-		    </tr>
-		    <tr th:each="payment : ${payments}">
-		        <td th:text="${payment.id}"></td>
-		        <td th:text="${payment.borrower.name}"></td>
-		        <td th:text="${payment.amount}"></td>
-		        <td th:text="${payment.paymentDate}"></td>
-		        <td th:text="${payment.loan != null ? payment.loan.status : 'N/A'}"></td>
-		    </tr>
-		</tbody>
-
-    </table>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${payments}">
+                <td th:text="${p.loan.id}"></td>
+                <td th:text="${p.amount}"></td>
+                <td th:text="${#temporals.format(p.paymentDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${p.status}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-
 </body>
 </html>

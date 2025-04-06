@@ -151,4 +151,12 @@ public class PaymentsController {
         model.addAttribute("payment", new Payments());
         return "loan/payments";
     }
+    
+    @GetMapping("/paid")
+    public String showPaidBorrowers(Model model) {
+        List<Payments> paidList = paymentrepository.findByStatus("Paid");
+        model.addAttribute("paidList", paidList);
+        return "loan/paid_list";
+    }
+
 }
