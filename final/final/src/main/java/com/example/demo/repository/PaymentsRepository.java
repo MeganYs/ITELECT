@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaymentsRepository extends JpaRepository<Payments, Long> {
-	@Query("SELECT p FROM Payments p WHERE p.borrower.id = :borrowerId")
-	List<Payments> findByBorrowerId(@Param("borrowerId") Long borrowerId);
+	List<Payments> findByBorrowerId(Long borrowerId);
+    List<Payments> findByStatus(String status);
 
 }
