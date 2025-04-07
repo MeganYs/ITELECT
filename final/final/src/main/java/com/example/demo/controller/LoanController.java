@@ -117,6 +117,8 @@ public class LoanController {
         existingLoan.setMonth(loan.getMonth());
         existingLoan.setAmount(newAmount);
         existingLoan.setBorrower(borrower);
+        existingLoan.setStatus(loan.getStatus());
+
 
         loanService.saveLoan(existingLoan);
 

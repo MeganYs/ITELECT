@@ -2,13 +2,91 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Loan List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        /* DARK MODE STYLES */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .dark-mode .container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .dark-mode .table {
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+
+        .dark-mode .table th,
+        .dark-mode .table td {
+            color: #ffffff;
+            background-color: #2a2a2a;
+            border-color: #444;
+        }
+
+        .dark-mode .btn {
+            color: #fff;
+            border-color: #555;
+        }
+
+        .dark-mode .btn-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .dark-mode .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .dark-mode .btn-info {
+            background-color: #0dcaf0;
+            color: #000;
+        }
+
+        .dark-mode .btn-success {
+            background-color: #198754;
+        }
+
+        .dark-mode .btn-primary {
+            background-color: #0d6efd;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
+    <!-- Theme Toggle Switch -->
+    <div class="theme-toggle">
+        <i id="themeIcon" class="bi bi-brightness-high"></i>
+        <input class="form-check-input" type="checkbox" id="themeSwitch">
+    </div>
+
     <h2>Loan List</h2>
 
-    <!-- Buttons for actions -->
+    <!-- Buttons -->
     <a href="/loans/new" class="btn btn-primary">New Loan</a>
     <a href="/borrow/borrow" class="btn btn-success">Borrow Loan</a>
     <a href="/payments" class="btn btn-info">Payments</a>
@@ -23,7 +101,7 @@
             <th>Status</th>
             <th>Due Date</th>
             <th>Terms (Months)</th>
-            <th>Monthly Installment</th> <!-- New Column -->
+            <th>Monthly Installment</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -35,7 +113,7 @@
             <td th:text="${loan.status}"></td>
             <td th:text="${loan.dueDate}"></td>
             <td th:text="${loan.month}"></td>
-            <td th:text="${loan.monthlyInstallment}"></td> <!-- New Cell -->
+            <td th:text="${loan.monthlyInstallment}"></td>
             <td>
                 <a th:href="@{/loans/update/{id}(id=${loan.id})}" class="btn btn-warning">Update</a>
                 <a th:href="@{/loans/delete/{id}(id=${loan.id})}" class="btn btn-danger">Delete</a>
@@ -44,5 +122,34 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    const themeSwitch = document.getElementById('themeSwitch');
+    const body = document.body;
+    const themeIcon = document.getElementById('themeIcon');
+
+    // Load theme on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark') {
+            body.classList.add('dark-mode');
+            themeSwitch.checked = true;
+            themeIcon.classList.replace('bi-brightness-high', 'bi-moon');
+        }
+    });
+
+    // Toggle theme
+    themeSwitch.addEventListener('change', () => {
+        if (themeSwitch.checked) {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            themeIcon.classList.replace('bi-brightness-high', 'bi-moon');
+        } else {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+            themeIcon.classList.replace('bi-moon', 'bi-brightness-high');
+        }
+    });
+</script>
 </body>
 </html>
