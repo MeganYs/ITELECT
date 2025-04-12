@@ -41,6 +41,25 @@
                     });
             }
         }
+        
+        function handleBorrowerSearch() {
+            const input = document.getElementById("borrowerIdInput");
+            const hiddenInput = document.getElementById("borrowerId");
+            const options = document.getElementById("borrowerList").options;
+
+            hiddenInput.value = ""; // reset
+
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === input.value) {
+                    hiddenInput.value = options[i].getAttribute("data-id");
+                    break;
+                }
+            }
+
+            fetchLoans(); // still trigger the function when valid
+        }
+
+        
     </script>
 </head>
 <body>
@@ -51,12 +70,14 @@
 
     <form action="/payments/save" method="post" class="row g-3">
         <div class="col-md-6">
-            <label for="borrowerId" class="form-label">Borrower:</label>
-            <select name="borrowerId" id="borrowerId" class="form-select" onchange="fetchLoans()" required>
-                <option value="">-- Select Borrower --</option>
-                <option th:each="b : ${borrowers}" th:value="${b.id}" th:text="${b.name}"></option>
-            </select>
-        </div>
+    <label for="borrowerIdInput" class="form-label">Borrower:</label>
+    <input list="borrowerList" id="borrowerIdInput" name="borrowerName" class="form-control" oninput="handleBorrowerSearch()" required>
+    <datalist id="borrowerList">
+        <option th:each="b : ${borrowers}" th:data-id="${b.id}" th:value="${b.name}"></option>
+    </datalist>
+    <input type="hidden" name="borrowerId" id="borrowerId" />
+</div>
+
 
         <div class="col-md-6">
             <label for="loanId" class="form-label">Loan:</label>
@@ -66,10 +87,11 @@
             </select>
         </div>
 
-        <div class="col-md-6">
-            <label for="amount" class="form-label">Amount (Installment):</label>
-            <input type="text" id="amount" name="amount" class="form-control" readonly />
-        </div>
+<div class="col-md-6">
+    <label for="amount" class="form-label">Amount (Installment):</label>
+    <input type="text" id="amount" name="amount" class="form-control" />
+</div>
+
 
         <div class="col-md-12">
             <button type="submit" class="btn btn-primary mt-3">Submit Payment</button>
