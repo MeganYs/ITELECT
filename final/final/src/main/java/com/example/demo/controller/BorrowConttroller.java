@@ -31,23 +31,23 @@ public class BorrowConttroller {
     @GetMapping("/borrow")
     public String showCreateForm(Model model) {
         model.addAttribute("borrower", new Borrower());
-        return "loan/borrow";  // Return the form for creating a borrower
+        return "loan/borrow";  
     }
 
     @PostMapping
     public String saveBorrower(@ModelAttribute Borrower borrower) {
         Borrower savedBorrower = borrowerService.saveBorrower(borrower);
 
-        // Create a new loan for the saved borrower
+        
         Loan loan = new Loan();
-        loan.setBorrower(savedBorrower);  // Set the borrower for the loan
-        loan.setAmount(BigDecimal.valueOf(borrower.getAmount()));  // Set the loan amount (from the borrower)
-        loan.setStatus("Pending");  // Default status for the loan
-        loan.setDueDate(new Date());  // Set the current date as due date (you can modify this as per your logic)
+        loan.setBorrower(savedBorrower);  
+        loan.setAmount(BigDecimal.valueOf(borrower.getAmount()));  
+        loan.setStatus("Pending");  
+        loan.setDueDate(new Date());  
 
-        loanService.saveLoan(loan);  // Save the loan in the database
+        loanService.saveLoan(loan);  
 
-        return "redirect:/loans";  // Redirect to the loan list page after saving the borrower and loan
+        return "redirect:/loans"; 
     }
 
 
