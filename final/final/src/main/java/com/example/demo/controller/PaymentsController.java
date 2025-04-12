@@ -54,7 +54,7 @@ public class PaymentsController {
             model.addAttribute("selectedBorrowerId", borrowerId);
             payments = paymentsService.findByBorrowerId(borrowerId);
         } else {
-            payments = paymentsService.getAllPayments(); // or new ArrayList<>()
+            payments = paymentsService.getAllPayments(); 
         }
         model.addAttribute("payments", payments);
 
@@ -134,7 +134,7 @@ public class PaymentsController {
     @GetMapping("/installment")
     @ResponseBody
     public Map<String, BigDecimal> getInstallment(@RequestParam Long loanId) {
-        BigDecimal installment = loanService.getMonthlyInstallment(loanId); // Make sure this method exists
+        BigDecimal installment = loanService.getMonthlyInstallment(loanId); 
         return Map.of("installment", installment);
     }
 

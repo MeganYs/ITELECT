@@ -29,38 +29,7 @@
 		        </select>
 		    </div>
 		    
-		    <div class="mb-3">
-    <label for="month">Terms (Months):</label>
-    <select name="month" class="form-control" id="month" required onchange="setDueDate()">
-        <option value="" disabled selected>Select Terms</option>
-        <option value="1">1 Month - No Interest</option>
-        <option value="3">3 Months - 10% Interest</option>
-        <option value="6">6 Months - 20% Interest</option>
-        <option value="12">12 Months - 30% Interest</option>
-    </select>
-</div>
-		    
-		    <div class="mb-3">
-    <label for="dueDate">Due Date:</label>
-    <input type="date" name="dueDate" class="form-control" id="dueDate" required>
-</div>
 
-<script>
-    function setDueDate() {
-        const monthSelect = document.getElementById('month');
-        const dueDateInput = document.getElementById('dueDate');
-
-        const selectedMonths = parseInt(monthSelect.value);
-        if (!isNaN(selectedMonths)) {
-            const today = new Date();
-            const dueDate = new Date(today.setMonth(today.getMonth() + selectedMonths));
-
-            // Format as YYYY-MM-DD
-            const formattedDate = dueDate.toISOString().split('T')[0];
-            dueDateInput.value = formattedDate;
-        }
-    }
-</script>
 		    <button type="submit" class="btn btn-success">Save</button>
 		    <a href="/loans" class="btn btn-secondary">Cancel</a>
 		</form>
