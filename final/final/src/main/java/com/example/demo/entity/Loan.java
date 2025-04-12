@@ -102,7 +102,7 @@ public class Loan {
             default -> BigDecimal.ZERO;
         };
 
-        BigDecimal totalAmountWithInterest = this.amount.add(this.amount.multiply(interestRate));
+        BigDecimal totalAmountWithInterest = this.amount;
         return totalAmountWithInterest.divide(BigDecimal.valueOf(this.month), 2, BigDecimal.ROUND_HALF_UP);
     }
 
