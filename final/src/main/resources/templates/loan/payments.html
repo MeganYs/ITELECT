@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payments</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        // When borrower is selected, load their loans
+        function fetchLoans() {
+            const borrowerId = document.getElementById("borrowerId").value;
+            const loanSelect = document.getElementById("loanId");
+            const amountInput = document.getElementById("amount");
+
+            loanSelect.innerHTML = '<option value="">Loading...</option>';
+            amountInput.value = "";
+
+            if (borrowerId) {
+				fetch(`/payments/loans?borrowerId=${borrowerId}`)
+                    .then(res => res.json())
+                    .then(loans => {
+                        loanSelect.innerHTML = '<option value="">-- Select Loan --</option>';
+                        loans.forEach(loan => {
+                            const option = document.createElement("option");
+                            option.value = loan.id;
+                            option.text = `Loan #${loan.id} - ₱${loan.amount}`;
+                            loanSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                loanSelect.innerHTML = '<option value="">-- Select Loan --</option>';
+            }
+        }
+
+        // When loan is selected, fetch installment
+        function fetchInstallment() {
+            const loanId = document.getElementById("loanId").value;
+            if (loanId) {
+                fetch(`/payments/installment?loanId=${loanId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("amount").value = data.installment;
+                    });
+            }
+        }
+        
+		function handleBorrowerSearch() {
+		    const name = document.getElementById("borrowerIdInput").value;
+		    const loanSelect = document.getElementById("loanId");
+		    const amountInput = document.getElementById("amount");
+
+		    loanSelect.innerHTML = '<option value="">Loading...</option>';
+		    amountInput.value = "";
+
+		    if (name.trim() !== "") {
+		        fetch(`/payments/loans-by-name?name=${encodeURIComponent(name)}`)
+		            .then(res => res.json())
+		            .then(loans => {
+		                loanSelect.innerHTML = '<option value="">-- Select Loan --</option>';
+		                loans.forEach(loan => {
+		                    const option = document.createElement("option");
+		                    option.value = loan.id;
+		                    option.text = `Loan #${loan.id} - ₱${loan.amount}`;
+		                    loanSelect.appendChild(option);
+		                });
+		            });
+		    } else {
+		        loanSelect.innerHTML = '<option value="">-- Select Loan --</option>';
+		    }
+		}
+
+
+        
+    </script>
+</head>
+<body>
+<div class="container mt-5">
+	<a href="/loans" class="btn btn-secondary">Back</a>
+	
+    <h2 class="mb-4">Payment</h2>
+
+    <form action="/payments/save" method="post" class="row g-3">
+        <div class="col-md-6">
+    <label for="borrowerIdInput" class="form-label">Borrower:</label>
+    <input list="borrowerList" id="borrowerIdInput" name="borrowerName" class="form-control" oninput="handleBorrowerSearch()" required>
+	<datalist id="borrowerList">
+	    <option th:each="b : ${borrowers}" th:value="${b.name}"></option>
+	</datalist>
+
+    <input type="hidden" name="borrowerId" id="borrowerId" />
+</div>
+
+
+        <div class="col-md-6">
+            <label for="loanId" class="form-label">Loan:</label>
+            <select id="loanId" name="loanId" class="form-select" onchange="fetchInstallment()" required>
+                <option value="">-- Select Loan --</option>
+                <!-- Options are dynamically loaded via JS -->
+            </select>
+        </div>
+
+<div class="col-md-6">
+    <label for="amount" class="form-label">Amount (Installment):</label>
+    <input type="text" id="amount" name="amount" class="form-control" />
+</div>
+
+
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary mt-3">Submit Payment</button>
+        </div>
+    </form>
+
+    <hr class="my-5">
+
+    <h2 class="mb-4">Payment Records</h2>
+
+    <form method="get" action="/payments" class="row g-3">
+        <div class="col-md-6">
+            <select name="borrowerId" class="form-select">
+                <option value="">-- Select Borrower --</option>
+                <option th:each="b : ${borrowers}" th:value="${b.id}" th:text="${b.name}"
+                        th:selected="${selectedBorrowerId == b.id}"></option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <button type="submit" class="btn btn-info">View Payments</button>
+        </div>
+    </form>
+
+    <div class="mt-4" th:if="${payments.isEmpty()}">
+        <div class="alert alert-warning">No payment records found.</div>
+    </div>
+
+    <div class="mt-4" th:if="${!payments.isEmpty()}">
+        <table class="table table-bordered">
+            <thead class="table-light">
+            <tr>
+                <th>Loan ID</th>
+                <th>Amount Paid</th>
+                <th>Date Paid</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${payments}">
+                <td th:text="${p.loan.id}"></td>
+                <td th:text="${p.amount}"></td>
+                <td th:text="${#temporals.format(p.paymentDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${p.status}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
