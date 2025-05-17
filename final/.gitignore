@@ -31,3 +31,17 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore IDE settings and temp files
+.vs/
+.idea/
+*.iml
+
+# Ignore build outputs
+/target/
+/bin/
+/build/
+
+# Ignore OS junk files
+.DS_Store
+Thumbs.db
